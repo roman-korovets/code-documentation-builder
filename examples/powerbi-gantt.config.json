@@ -1,0 +1,153 @@
+{
+  "moduleMap": {
+    "src/services/data-cache-service/": "services/data-cache",
+    "src/modules/splashScreen/": "splashScreen",
+    "src/modules/ganttChart/": "ganttChart"
+  },
+  "featureTaxonomy": [
+    {
+      "slug": "pdf-export",
+      "displayName": "PDF Export",
+      "pathPatterns": ["/pdf-service/", "/pdf-export-dialog/"],
+      "hintPatterns": ["\\bpdf[A-Z]", "exportPdf", "pdfQuery", "pdf-export"]
+    },
+    {
+      "slug": "excel-export",
+      "displayName": "Excel Export",
+      "pathPatterns": ["/excel-service/", "/excel-button/", "/export-excel-modal/"],
+      "hintPatterns": ["\\bexcel\\b", "useExcelExport", "handleExcel"]
+    },
+    {
+      "slug": "conditional-formatting",
+      "displayName": "Conditional Formatting",
+      "pathPatterns": ["/conditional-formatting/", "/applyColors"],
+      "hintPatterns": ["\\bcf[A-Z]", "\\bcfRules", "conditionalFormatting", "applyConditionalFormatting", "reapplyCf"]
+    },
+    {
+      "slug": "custom-filters",
+      "displayName": "Custom Filters",
+      "pathPatterns": ["/custom-filters/", "applyCustomFilter"],
+      "hintPatterns": ["customFilter"]
+    },
+    {
+      "slug": "days-off",
+      "displayName": "Days Off / Holidays",
+      "pathPatterns": ["/days-off/"],
+      "hintPatterns": ["daysOff", "holidays", "weekendsMarker"]
+    },
+    {
+      "slug": "events-markers",
+      "displayName": "Events & Range Markers",
+      "pathPatterns": ["/modules/events/", "/markers/", "/event-markers"],
+      "hintPatterns": ["eventMarker", "rangeMarker", "buildMarkerViews", "classifyMarker"]
+    },
+    {
+      "slug": "row-drills",
+      "displayName": "Conditional Row Drills",
+      "pathPatterns": ["/row-drills/"],
+      "hintPatterns": ["rowDrill"]
+    },
+    {
+      "slug": "data-legend",
+      "displayName": "Data Legend",
+      "pathPatterns": ["/data-legend/"],
+      "hintPatterns": ["dataLegend", "(?<!milestone-)\\blegend"]
+    },
+    {
+      "slug": "group-columns",
+      "displayName": "Group Columns",
+      "pathPatterns": ["/group-columns/"],
+      "hintPatterns": ["groupColumn", "columnGroup"]
+    },
+    {
+      "slug": "milestones",
+      "displayName": "Milestones",
+      "pathPatterns": ["/markers/", "/draw-vector-milestone"],
+      "hintPatterns": ["milestone", "milestones", "MilestoneLegend"]
+    },
+    {
+      "slug": "connector-lines",
+      "displayName": "Connector Lines",
+      "pathPatterns": ["/connector-lines"],
+      "hintPatterns": ["connectorLine", "ConnectorLine"]
+    },
+    {
+      "slug": "timeline-zoom",
+      "displayName": "Timeline & Zoom",
+      "pathPatterns": ["/timelines-utils", "/scroll-utils", "/toolbar-utils"],
+      "hintPatterns": ["timeline", "\\bzoom\\b", "ZoomLevel", "scrollPosition"]
+    },
+    {
+      "slug": "splitter-view",
+      "displayName": "Splitter View",
+      "hintPatterns": ["splitter", "SplitterView"]
+    },
+    {
+      "slug": "high-contrast",
+      "displayName": "High Contrast Mode",
+      "hintPatterns": ["highContrast", "HighContrast"]
+    },
+    {
+      "slug": "hierarchy-colors",
+      "displayName": "Hierarchy Colors",
+      "hintPatterns": ["hierarchyColor", "HierarchyColor"]
+    },
+    {
+      "slug": "task-editing",
+      "displayName": "Task Editing",
+      "hintPatterns": ["taskbarEditing", "actionBegin", "actionComplete", "handleTaskbar"]
+    },
+    {
+      "slug": "virtual-scroll",
+      "displayName": "Virtual Scroll / Performance",
+      "pathPatterns": ["/virtual-scroll/"],
+      "hintPatterns": ["virtualScroll", "VirtualPage", "virtualPageAction"]
+    },
+    {
+      "slug": "data-transform",
+      "displayName": "Data Transform & Cache",
+      "pathPatterns": [
+        "/calculation-values/",
+        "/data-mapping/",
+        "/data-cache-service/",
+        "/sources-config/",
+        "/tasks-dependencies/"
+      ],
+      "hintPatterns": [
+        "mapRowsToChartData",
+        "calculateAllTasksValues",
+        "buildRenderSnapshot",
+        "resolveRenderAction",
+        "transformCache",
+        "extractDataAffecting",
+        "buildTreeFingerprint"
+      ]
+    },
+    {
+      "slug": "watermark-license",
+      "displayName": "Watermark & License",
+      "pathPatterns": ["/watermark/", "/splashScreen/"],
+      "hintPatterns": ["watermark", "LandingPage", "license", "License"]
+    },
+    {
+      "slug": "sorting",
+      "displayName": "Column Sorting",
+      "hintPatterns": ["\\bsort", "Sorting", "columnsSorting"]
+    }
+  ],
+  "hotPathPatterns": [
+    "queryCellInfo",
+    "taskbarInfo",
+    "rowDataBound",
+    "headerCellInfo",
+    "pdfQuery[A-Z]",
+    "applyConditionalFormattingToRow",
+    "applyCfClassesToTaskbar",
+    "applyGroupedChartRowClasses",
+    "syncTaskLabelSpans"
+  ],
+  "slugPrefixRules": [
+    { "filePattern": "/callbacks/", "prefix": "gantt-callback" },
+    { "filePattern": "/hooks/", "prefix": "gantt-hook" }
+  ]
+}

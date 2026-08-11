@@ -1,0 +1,21 @@
+{
+  "moduleMap": {
+    "src/index.ts": "app",
+    "src/store.ts": "store",
+    "src/utils.ts": "utils"
+  },
+  "featureTaxonomy": [
+    {
+      "slug": "persistence",
+      "displayName": "Persistence",
+      "pathPatterns": ["/store"],
+      "hintPatterns": ["\\b(set|get|flush)Entry", "flushStore"]
+    },
+    {
+      "slug": "input-validation",
+      "displayName": "Input Validation",
+      "hintPatterns": ["isBlank"]
+    }
+  ],
+  "hotPathPatterns": []
+}
