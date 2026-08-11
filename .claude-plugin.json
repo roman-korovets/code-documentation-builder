@@ -1,0 +1,40 @@
+{
+  "name": "code-documentation-builder",
+  "version": "0.1.0",
+  "description": "Builds a Karpathy-style LLM-wiki documentation/ vault for any project: one Markdown node per function with YAML frontmatter and wikilinks, plus feature/module overviews, master index, and audit scripts. See architecture.md and implementation.md in the plugin root.",
+  "author": {
+    "name": "Dmytro Kurhan"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "documentation",
+    "llm-wiki",
+    "obsidian",
+    "karpathy"
+  ],
+  "commands": [
+    "commands/doc-build.md",
+    "commands/doc-update.md",
+    "commands/doc-audit.md",
+    "commands/doc-promote.md",
+    "commands/doc-status.md"
+  ],
+  "agents": [
+    "agents/inventory-scanner.md",
+    "agents/function-doc-writer.md",
+    "agents/feature-aggregator.md",
+    "agents/module-aggregator.md",
+    "agents/link-resolver.md",
+    "agents/quality-auditor.md",
+    "agents/hot-path-flagger.md"
+  ],
+  "skills": [
+    "skills/doc-keep-in-sync"
+  ],
+  "hooks": {
+    "pre-commit": "hooks/pre-commit.sh",
+    "post-commit": "hooks/post-commit.sh",
+    "install": "hooks/install.sh"
+  }
+}

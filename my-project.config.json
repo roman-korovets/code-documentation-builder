@@ -1,0 +1,250 @@
+{
+  "projectRoot": "C:/Projects/frm-visual",
+  "outputRoot": "C:/Projects/frm-visual/documentation",
+  "moduleMap": {
+    "src/components/table/": "table",
+    "src/components/app/": "app",
+    "src/matrix-transform/": "matrix-transform",
+    "src/eaze/": "eaze",
+    "src/services/excel/": "services/excel",
+    "src/services/formattingModel/": "services/formatting-model",
+    "src/services/": "services",
+    "src/components/conditional-formatting/": "conditional-formatting",
+    "src/components/comment-section/": "comment-section",
+    "src/components/apllied-steps/": "applied-steps",
+    "src/components/export-excel-modal/": "export-excel-modal",
+    "src/components/excel-button/": "excel-button",
+    "src/components/data-bar/": "data-bar",
+    "src/components/drill-cell/": "drill-cell",
+    "src/components/drill-column/": "drill-column",
+    "src/components/pinning-column/": "pinning-column",
+    "src/components/pinning-row/": "pinning-row",
+    "src/components/search/": "search",
+    "src/components/sortBy/": "sort-by",
+    "src/components/float-buttons/": "float-buttons",
+    "src/components/color-picker/": "color-picker",
+    "src/components/column-styles-menu/": "column-styles-menu",
+    "src/components/custom-cascader/": "custom-cascader",
+    "src/components/select-menu/": "select-menu",
+    "src/components/slider-toggle/": "slider-toggle",
+    "src/components/snackbar/": "snackbar",
+    "src/components/forms/": "forms",
+    "src/components/fallback/": "fallback",
+    "src/components/hooks/": "hooks",
+    "src/components/styles/": "styles",
+    "src/settings/": "settings",
+    "src/settings-interfaces/": "settings-interfaces",
+    "src/interfaces/": "interfaces",
+    "src/libs/": "libs",
+    "src/icons/": "icons"
+  },
+  "featureTaxonomy": [
+    {
+      "slug": "conditional-formatting",
+      "displayName": "Conditional Formatting",
+      "pathPatterns": ["/conditional-formatting/"],
+      "hintPatterns": ["conditionalFormatting", "applyCf", "ApplyCFStyles", "colorScale", "ColorScale", "cfRules", "FormulaCondition"]
+    },
+    {
+      "slug": "comment-section",
+      "displayName": "Comments",
+      "pathPatterns": ["/comment-section/"],
+      "hintPatterns": ["\\bcomment", "Comment[A-Z]", "useCommentEditor", "useCommentHandler"]
+    },
+    {
+      "slug": "excel-export",
+      "displayName": "Excel Export",
+      "pathPatterns": ["/services/excel/", "/export-excel-modal/", "/excel-button/"],
+      "hintPatterns": ["\\bexcel\\b", "ExcelJS", "exceljs", "prepareExcelFile", "downloadExcel", "ExportExcel"]
+    },
+    {
+      "slug": "matrix-transform",
+      "displayName": "Matrix Transform",
+      "pathPatterns": ["/matrix-transform/"],
+      "hintPatterns": ["visualTransform", "matrixTransform", "setDefaultColors", "HideEmptyRowsEvaluator", "HideEmptyColumnsEvaluator"]
+    },
+    {
+      "slug": "hide-empty",
+      "displayName": "Hide Empty Rows / Columns",
+      "pathPatterns": ["HideEmptyRows", "HideEmptyColumns"],
+      "hintPatterns": ["hideEmpty", "HideEmpty"]
+    },
+    {
+      "slug": "drill-down",
+      "displayName": "Drill Down (Rows & Columns)",
+      "pathPatterns": ["/drill-cell/", "/drill-column/"],
+      "hintPatterns": ["drillDown", "DrillDown", "useDrillDownFeature", "handleColumnDrill", "columnDrills", "rowDrill", "getDrillStateForCell", "isColumnDrillable"]
+    },
+    {
+      "slug": "row-drills",
+      "displayName": "Row Drills",
+      "hintPatterns": ["useRowDrills", "rowDrills"]
+    },
+    {
+      "slug": "column-expansion",
+      "displayName": "Column Expansion",
+      "hintPatterns": ["columnExpansion", "ColumnExpansion", "storeColumnExpansionState", "getColumnExpansionWorkspace"]
+    },
+    {
+      "slug": "row-expansion",
+      "displayName": "Row Expansion",
+      "hintPatterns": ["rowExpansion", "RowExpansion", "useRowExpansion"]
+    },
+    {
+      "slug": "ragged-hierarchy",
+      "displayName": "Ragged Hierarchy",
+      "hintPatterns": ["ragged", "Ragged", "RaggedHierarchy"]
+    },
+    {
+      "slug": "pinning-column",
+      "displayName": "Pinning Columns",
+      "pathPatterns": ["/pinning-column/"],
+      "hintPatterns": ["pinningColumn", "pinnedColumn", "usePinnedHeaderGroups", "PinButton"]
+    },
+    {
+      "slug": "pinning-row",
+      "displayName": "Pinning Rows",
+      "pathPatterns": ["/pinning-row/"],
+      "hintPatterns": ["pinningRow", "pinnedRow", "usePinRowsList", "PinningRowWrapper"]
+    },
+    {
+      "slug": "search",
+      "displayName": "Search",
+      "pathPatterns": ["/components/search/"],
+      "hintPatterns": ["useTableSearching", "useSearchDrawer", "SearchSection", "TableSearchReset"]
+    },
+    {
+      "slug": "sort-by",
+      "displayName": "Sort By",
+      "pathPatterns": ["/sortBy/"],
+      "hintPatterns": ["useTableSorting", "useSortingDrawer", "SortByButton", "SortBySection", "\\bsortBy\\b"]
+    },
+    {
+      "slug": "data-bar",
+      "displayName": "Data Bars",
+      "pathPatterns": ["/data-bar/"],
+      "hintPatterns": ["dataBar", "DataBar"]
+    },
+    {
+      "slug": "applied-steps",
+      "displayName": "Applied Steps",
+      "pathPatterns": ["/apllied-steps/"],
+      "hintPatterns": ["appliedStep", "AppliedStep", "RenameStepModal"]
+    },
+    {
+      "slug": "column-styles-menu",
+      "displayName": "Column Styles Menu",
+      "pathPatterns": ["/column-styles-menu/"],
+      "hintPatterns": ["columnStyles", "ColumnStyles"]
+    },
+    {
+      "slug": "row-headers",
+      "displayName": "Row Headers",
+      "hintPatterns": ["rowHeader", "RowHeader", "RowHeaderTableCell"]
+    },
+    {
+      "slug": "column-headers",
+      "displayName": "Column Headers",
+      "hintPatterns": ["columnHeader", "ColumnHeader", "TableHeader", "ColumnCaptionEvaluator", "evalColumnTitle"]
+    },
+    {
+      "slug": "subtotals",
+      "displayName": "Subtotals & Row Totals",
+      "hintPatterns": ["subTotal", "SubTotal", "rowTotal", "RowTotal", "columnTotal", "ColumnTotal", "rowTotalsRecalc"]
+    },
+    {
+      "slug": "eaze-calculations",
+      "displayName": "Eaze Custom Calculations",
+      "pathPatterns": ["/eaze/", "/settings/Calculations/"],
+      "hintPatterns": ["runCalculations", "eazeCustomFunctions", "ParseCalculations", "ASTWalker", "Invision", "signFactor"]
+    },
+    {
+      "slug": "formatting-model",
+      "displayName": "Formatting Model (Settings Panel)",
+      "pathPatterns": ["/services/formattingModel/"],
+      "hintPatterns": ["formattingModel", "FormattingModel", "measureStyles", "columnHeadersFormatting", "rowTotalsFormatting", "commentsFormatting"]
+    },
+    {
+      "slug": "tooltips",
+      "displayName": "Tooltips",
+      "hintPatterns": ["tooltip", "Tooltip", "createTooltipServiceWrapper"]
+    },
+    {
+      "slug": "watermark-license",
+      "displayName": "Watermark & License",
+      "hintPatterns": ["watermark", "Watermark", "LandingPage", "validateWebLicense", "checkPowerBiLicense", "isUsingPremiumFeatures"]
+    },
+    {
+      "slug": "float-buttons",
+      "displayName": "Floating Action Buttons",
+      "pathPatterns": ["/float-buttons/"],
+      "hintPatterns": ["FloatGroupButton", "floatGroup"]
+    },
+    {
+      "slug": "custom-columns",
+      "displayName": "Custom Columns",
+      "hintPatterns": ["customColumn", "CustomColumn"]
+    },
+    {
+      "slug": "visual-lifecycle",
+      "displayName": "Visual Lifecycle & Update",
+      "pathPatterns": ["src/visual.ts", "/components/app/"],
+      "hintPatterns": ["VisualUpdate", "visualTransformCallback", "debounceTransforming", "getVisualTransformType", "getVisualRenderType"]
+    }
+  ],
+  "hotPathPatterns": [
+    "handleCellClick",
+    "handleRowStyle",
+    "getCellClassNames",
+    "resolveCellFormatString",
+    "getDrillStateForCell",
+    "getParentColumnStatus",
+    "isColumnDrillable",
+    "filterHidden",
+    "filterDrills",
+    "filterRaggedCollapsed",
+    "filterSubtotalDrillBy",
+    "filterSubtotalDrillDown",
+    "ApplyCFStyles",
+    "applyConditionalFormatting",
+    "applyCf",
+    "ValueTableCell",
+    "RowHeaderTableCell",
+    "TableRow",
+    "TableHeaderCell",
+    "TableBody",
+    "visualTransform",
+    "setDefaultColors",
+    "HideEmptyRowsEvaluator",
+    "HideEmptyColumnsEvaluator",
+    "ColumnCaptionEvaluator",
+    "evalColumnTitle",
+    "runCalculations",
+    "rowTotalsRecalc",
+    "use-debounce",
+    "useDeepCompareMemo",
+    "debounceTransforming"
+  ],
+  "slugPrefixRules": [
+    { "filePattern": "/components/table/hooks/", "prefix": "table-hook" },
+    { "filePattern": "/components/table/components/", "prefix": "table-cell" },
+    { "filePattern": "/components/table/", "prefix": "table" },
+    { "filePattern": "/components/hooks/", "prefix": "shared-hook" },
+    { "filePattern": "/components/search/hooks/", "prefix": "search-hook" },
+    { "filePattern": "/components/sortBy/hooks/", "prefix": "sort-hook" },
+    { "filePattern": "/components/pinning-column/hooks/", "prefix": "pin-col-hook" },
+    { "filePattern": "/components/pinning-row/hooks/", "prefix": "pin-row-hook" },
+    { "filePattern": "/components/comment-section/hooks/", "prefix": "comment-hook" },
+    { "filePattern": "/components/comment-section/form/", "prefix": "comment-form" },
+    { "filePattern": "/components/comment-section/list/", "prefix": "comment-list" },
+    { "filePattern": "/components/conditional-formatting/color-scales/", "prefix": "cf-color-scale" },
+    { "filePattern": "/components/conditional-formatting/", "prefix": "cf" },
+    { "filePattern": "/services/excel/", "prefix": "excel" },
+    { "filePattern": "/services/formattingModel/", "prefix": "format-model" },
+    { "filePattern": "/matrix-transform/", "prefix": "matrix" },
+    { "filePattern": "/eaze/", "prefix": "eaze" },
+    { "filePattern": "/settings/Calculations/", "prefix": "calc" },
+    { "filePattern": "/settings/", "prefix": "settings" },
+    { "filePattern": "/settings-interfaces/", "prefix": "settings-iface" }
+  ]
+}

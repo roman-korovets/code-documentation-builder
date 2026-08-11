@@ -1,0 +1,49 @@
+{
+  "name": "code-documentation-builder",
+  "version": "0.1.0",
+  "description": "Claude Code plugin that builds a Karpathy-style documentation vault from a function inventory.",
+  "type": "module",
+  "main": "dist/orchestrator.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "discover": "tsx src/cli/discover.ts",
+    "classify": "tsx src/cli/classify.ts",
+    "graph": "tsx src/cli/graph.ts",
+    "generate": "tsx src/cli/generate.ts",
+    "link": "tsx src/cli/link.ts",
+    "aggregate": "tsx src/cli/aggregate.ts",
+    "audit": "tsx src/cli/audit.ts",
+    "build:vault": "tsx src/cli/build.ts",
+    "verify": "tsx src/cli/verify.ts",
+    "audit-links": "node templates/audit-links.mjs",
+    "audit-quality": "node templates/audit-quality.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.2",
+    "gray-matter": "^4.0.3",
+    "typescript": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "vitest": "^1.6.0"
+  },
+  "optionalDependencies": {
+    "@anthropic-ai/sdk": "^0.27.0"
+  },
+  "keywords": [
+    "claude-code",
+    "documentation",
+    "llm-wiki",
+    "karpathy"
+  ],
+  "license": "MIT"
+}
