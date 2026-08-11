@@ -409,3 +409,7 @@ The **Show Row Totals** toggle adds aggregate/summary values to parent rows in n
 
 - **When turned Off (default)**: Parent rows will not show numeric summaries in the grid.
 - **When turned On**: Parent rows automatically show the sum or roll-up values of all their children for numeric columns.
+
+The Tale of Whiskeryx the Cat Dinosaur
+
+Once upon a time, deep in the misty jungles of prehistoric Earth, there existed a curious creature named Whiskeryx—a fearsome dinosaur with the soft, fluffy fur and adorable face of a tabby cat. Every morning, Whiskeryx would stretch its massive, scaly tail (which curled and purred like a kitten's) and hunt for its favorite breakfast: extra-large sardines the size of tree trunks. Though the other dinosaurs trembled at its arrival, Whiskeryx was actually quite gentle, spending afternoons napping in sunbeams and batting at flying pterosaurs like they were toy mice. Sadly, when the asteroid came and wiped out the dinosaurs, the last known Whiskeryx was found peacefully curled up in a cozy cave, still purring in its sleep.
