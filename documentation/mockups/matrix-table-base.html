@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Financial Reporting Matrix — native table mockup</title>
+    <style>
+      /* ------------------------------------------------------------------
+         Clone of the Financial Reporting Matrix visual built on native
+         <table> / <tr> / <th> / <td>, but every row is laid out with
+         display: flex instead of the table row algorithm.
+
+         Because a flex <tr> no longer participates in table layout, the
+         browser can no longer size columns for us: the width comes from
+         explicit width + flex-basis on each header cell, and the body
+         cells mirror those widths. colspan is likewise inert under flex,
+         so the "2022" group cell is sized to two value columns instead.
+      ------------------------------------------------------------------ */
+
+      :root {
+        --frm-font: 'Segoe UI', 'Segoe UI Web (West European)', Tahoma, Arial, sans-serif;
+        --frm-text: #252423;
+        --frm-text-muted: #605e5c;
+        --frm-grid: #d3d3d3;
+        --frm-grid-strong: #8a8886;
+        --frm-accent: #d13438;
+
+        /* column geometry — single source of truth */
+        --col-gutter: 16px;
+        --col-label: 372px;
+        --col-value: 100px;
+        --col-group: 200px; /* = --col-value * 2 */
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        background: #f3f2f1;
+        font-family: var(--frm-font);
+        color: var(--frm-text);
+      }
+
+      /* ---------------------------------------------------------- table -- */
+
+      table.frm-matrix {
+        display: block; /* rows are flex, so the table itself is a block */
+        width: max-content;
+        max-width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        background: #fff;
+        font-size: 12px;
+        line-height: 1;
+        overflow-x: auto;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+      }
+
+      table.frm-matrix thead,
+      table.frm-matrix tbody {
+        display: block;
+      }
+
+      /* ------------------------------------------------------------ row -- */
+
+      table.frm-matrix tr {
+        display: flex;
+        align-items: stretch;
+        min-height: 24px;
+      }
+
+      table.frm-matrix thead tr {
+        min-height: 26px;
+      }
+
+      /* ----------------------------------------------------------- cell -- */
+
+      /* No font-weight reset here: at specificity (0,1,2) it would outrank
+         every `th.c-value` / `tr.frm-total` bold rule below. The one header
+         cell that must not inherit th's default bold is .c-label. */
+      table.frm-matrix th,
+      table.frm-matrix td {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 8px;
+        border: 0;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      /* ------------------------------- explicit header cell widths ------- */
+
+      th.c-gutter {
+        width: var(--col-gutter);
+        flex: 0 0 var(--col-gutter);
+        padding: 0;
+        justify-content: center;
+      }
+
+      th.c-label {
+        width: var(--col-label);
+        flex: 0 0 var(--col-label);
+        justify-content: flex-start;
+        text-align: left;
+        font-weight: 400;
+      }
+
+      th.c-group {
+        width: var(--col-group);
+        flex: 0 0 var(--col-group);
+        justify-content: center;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      th.c-value {
+        width: var(--col-value);
+        flex: 0 0 var(--col-value);
+        justify-content: flex-end;
+        text-align: right;
+        font-weight: 700;
+      }
+
+      /* --------------------- body cells mirror the header widths --------- */
+
+      td.c-gutter {
+        width: var(--col-gutter);
+        flex: 0 0 var(--col-gutter);
+        padding: 0;
+        justify-content: center;
+      }
+
+      td.c-label {
+        width: var(--col-label);
+        flex: 0 0 var(--col-label);
+      }
+
+      td.c-value {
+        width: var(--col-value);
+        flex: 0 0 var(--col-value);
+        justify-content: flex-end;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* --------------------------------------------------------- header -- */
+
+      /* Strong vertical rule separating row labels from the value area.
+         It must land on the leading cell of BOTH header rows AND of every
+         body row, so the 1px borders stack into one continuous stroke
+         running the full height of the grid. Header-only selectors leave
+         the rule stopping dead at the thead/tbody boundary, which reads
+         as a rendering bug. `:first-of-type` cannot be used here — the
+         first cell of each row is .c-gutter, so .c-value:first-of-type
+         never matches; the label cell's adjacent sibling is the reliable
+         hook. The borders cost no width because of `* { box-sizing:
+         border-box }` above. */
+      thead th.c-group,
+      thead th.c-label + th.c-value,
+      tbody td.c-label + td.c-value {
+        border-left: 1px solid var(--frm-grid-strong);
+      }
+
+      /* short separator tick at the right edge of each column caption */
+      thead th.c-value {
+        position: relative;
+      }
+
+      thead th.c-value::after {
+        content: '';
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        right: 0;
+        width: 1px;
+        background: var(--frm-grid-strong);
+      }
+
+      tr.frm-header-bottom {
+        border-bottom: 1px solid var(--frm-grid);
+      }
+
+      .frm-menu-hint {
+        color: var(--frm-text-muted);
+      }
+
+      .frm-menu-dots {
+        color: var(--frm-text);
+        font-weight: 700;
+        letter-spacing: 1px;
+        transform: translateY(-3px);
+      }
+
+      /* ------------------------------------------------------ data rows -- */
+
+      tr.frm-total {
+        font-weight: 700;
+        border-top: 1px solid var(--frm-grid);
+        border-bottom: 1px solid var(--frm-grid);
+      }
+
+      /* Iconless rows indent to where the icon rows' text begins:
+         8px cell padding + 11px icon + 6px gap = 25px. The
+         `table.frm-matrix` prefix is required — without it these lose to
+         the `padding: 0 8px` shorthand on `table.frm-matrix td`. */
+      table.frm-matrix td.indent-1 {
+        padding-left: 25px;
+      }
+
+      table.frm-matrix td.indent-2 {
+        padding-left: 33px;
+      }
+
+      table.frm-matrix td.indent-3 {
+        padding-left: 41px;
+      }
+
+      /* Expand affordance — the "plus" shape from ExpandIcon.tsx.
+         The rect is drawn on the viewBox edge, so its 2px stroke is
+         half-clipped by the svg box; that is what gives the icon its
+         thin 1px outline in the real visual. */
+      .frm-expander {
+        display: block;
+        flex: 0 0 11px;
+        width: 11px;
+        height: 11px;
+        color: #767676;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+      }
+
+      /* expanded state hides the vertical bar, turning + into − */
+      .frm-expander.is-open .frm-expander-bar {
+        display: none;
+      }
+
+      /* row-selection triangle in the left gutter */
+      .frm-marker {
+        width: 0;
+        height: 0;
+        border-left: 5px solid var(--frm-text);
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+      }
+
+      /* red rule under a highlighted row label */
+      .frm-underline {
+        padding-bottom: 3px;
+        border-bottom: 2px solid var(--frm-accent);
+      }
+
+      /* the next row, clipped by the visual's viewport */
+      tr.frm-clipped {
+        height: 7px;
+        min-height: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <table class="frm-matrix">
+      <thead>
+        <tr>
+          <th class="c-gutter" scope="col"></th>
+          <th class="c-label" scope="col">
+            <span class="frm-menu-dots">•••</span>
+            <span class="frm-menu-hint">(Right click to display the menu)</span>
+          </th>
+          <th class="c-group" scope="col">2022</th>
+        </tr>
+        <tr class="frm-header-bottom">
+          <th class="c-gutter" scope="col"></th>
+          <th class="c-label" scope="col"></th>
+          <th class="c-value" scope="col">Actuals</th>
+          <th class="c-value" scope="col">Budget</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td class="c-gutter"></td>
+          <td class="c-label">
+            <svg class="frm-expander" viewBox="0 0 20 20" aria-hidden="true">
+              <rect x="0" y="0" width="20" height="20" />
+              <line class="frm-expander-bar" x1="10" y1="4" x2="10" y2="16" />
+              <line x1="4" y1="10" x2="16" y2="10" /></svg
+            ><span>Sales</span>
+          </td>
+          <td class="c-value">36,465</td>
+          <td class="c-value">30,910</td>
+        </tr>
+
+        <tr>
+          <td class="c-gutter"></td>
+          <td class="c-label">
+            <svg class="frm-expander" viewBox="0 0 20 20" aria-hidden="true">
+              <rect x="0" y="0" width="20" height="20" />
+              <line class="frm-expander-bar" x1="10" y1="4" x2="10" y2="16" />
+              <line x1="4" y1="10" x2="16" y2="10" /></svg
+            ><span>Other Operational Income</span>
+          </td>
+          <td class="c-value">-</td>
+          <td class="c-value">-</td>
+        </tr>
+
+        <tr class="frm-clipped" aria-hidden="true">
+          <td class="c-gutter"></td>
+          <td class="c-label">
+            <svg class="frm-expander" viewBox="0 0 20 20" aria-hidden="true">
+              <rect x="0" y="0" width="20" height="20" />
+              <line class="frm-expander-bar" x1="10" y1="4" x2="10" y2="16" />
+              <line x1="4" y1="10" x2="16" y2="10" /></svg
+            ><span>Financial Income</span>
+          </td>
+          <td class="c-value">2,410</td>
+          <td class="c-value">2,100</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

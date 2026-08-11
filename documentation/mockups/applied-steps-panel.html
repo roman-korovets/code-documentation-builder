@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Financial Reporting Matrix — Applied steps panel mockup</title>
+    <style>
+      /* ------------------------------------------------------------------
+         Clone of the visual's "Applied steps" panel — the calculation list
+         shown beside the editor in edit mode.
+
+         Geometry is lifted from the real component so a mockup and a
+         screenshot line up:
+
+           src/components/apllied-steps/AppliedSteps.tsx  — Container, HeaderContainer,
+                                                            MoveUpDownContainer, List
+           src/components/apllied-steps/Styles.ts         — StepContainer, ActionButtons,
+                                                            EmptyResult, SearchWrapper
+           src/components/apllied-steps/styles.css        — .applied-steps-container, .step-element
+           src/components/apllied-steps/components/       — Search, RenameStepModal,
+                                                            EmptySearchingResult
+
+         Two things drive the look and are easy to get wrong:
+
+         1. The selected step is NOT a theme accent — it is a flat
+            rgba(0,0,0,0.1) wash over white (StepContainer $selected).
+            There is no border, no left marker, no colour change.
+         2. The per-step action buttons (rename pencil, delete X) are always
+            in the DOM at min-width 32px and are hidden with opacity: 0,
+            not display: none. The row's text therefore does not reflow on
+            hover — it is already 32px short of the right edge.
+         3. Every grid/flex ancestor of a step label needs an explicit
+            min-width: 0 (or a minmax(0, …) track). Grid and flex items default
+            to min-width: auto, and a nowrap label has no min-content narrower
+            than the whole string — so the list, the header and the search row
+            silently grow past the 250px panel and .as-panel's overflow: hidden
+            shears off the right edge: the second move arrow, the search
+            button's right half, the list border, the delete X. The panel looks
+            fine while the list is empty, which is what makes this one bite.
+
+         The search row is an antd v5 Space.Compact: the Input and the
+         icon Button are welded, so the seam between them is a single
+         shared 1px border and the outer corners keep the 6px radius.
+      ------------------------------------------------------------------ */
+
+      :root {
+        --as-font: 'Segoe UI', 'Segoe UI Web (West European)', Tahoma, Arial, sans-serif;
+        --as-text: rgba(0, 0, 0, 0.88);
+        --as-text-muted: rgba(0, 0, 0, 0.45);
+        --as-border: #d9d9d9;
+        --as-selected: rgba(0, 0, 0, 0.1);
+
+        /* panel geometry — single source of truth */
+        --as-width: 250px;
+        --as-pad: 5px;
+        --as-header-h: 24px;
+        --as-step-line: 22px;
+        --as-actions-w: 32px;
+        --as-input-h: 32px;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        background: #faf9f8;
+        font-family: var(--as-font);
+        color: var(--as-text);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+        align-items: flex-start;
+      }
+
+      figure {
+        margin: 0;
+      }
+
+      figcaption {
+        font-size: 12px;
+        color: #605e5c;
+        margin-bottom: 8px;
+      }
+
+      /* --- Container (AppliedSteps.tsx) ------------------------------- */
+      .as-panel {
+        box-sizing: border-box;
+        padding: var(--as-pad);
+        background: #fff;
+        width: var(--as-width);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
+        overflow: hidden;
+      }
+
+      /* --- .applied-steps-container (styles.css) ---------------------- */
+      .as-body {
+        display: grid;
+        /* minmax(0, 1fr), not the implicit auto column: an auto track is sized
+           by its content's min-content width, and the nowrap step labels have
+           no min-content smaller than the whole string — so the track (and with
+           it the header and the list) grows past the 250px panel and gets
+           sliced off by .as-panel's overflow: hidden. See note 3 above. */
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        font-size: 13px;
+      }
+
+      /* --- HeaderContainer / Header / MoveUpDownContainer ------------- */
+      .as-header {
+        display: flex;
+        min-height: var(--as-header-h);
+      }
+
+      .as-header-title {
+        margin: 0 5px;
+      }
+
+      .as-move {
+        margin: 0 5px 0 auto;
+        width: var(--as-actions-w);
+        display: flex;
+      }
+
+      .as-move svg:last-child {
+        margin-left: 10px;
+      }
+
+      /* --- SearchWrapper + antd Space.Compact ------------------------- */
+      .as-search {
+        margin: var(--as-pad);
+        display: flex;
+      }
+
+      .as-input {
+        box-sizing: border-box;
+        flex: 1;
+        min-width: 0;
+        height: var(--as-input-h);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 4px 11px;
+        border: 1px solid var(--as-border);
+        border-radius: 6px 0 0 6px;
+        background: #fff;
+        font-size: 14px;
+        color: var(--as-text-muted);
+      }
+
+      .as-input.has-value {
+        color: var(--as-text);
+      }
+
+      .as-search-btn {
+        box-sizing: border-box;
+        width: var(--as-input-h);
+        height: var(--as-input-h);
+        margin-left: -1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--as-border);
+        border-radius: 0 6px 6px 0;
+        background: #fff;
+        color: var(--as-text);
+      }
+
+      /* --- List (AppliedSteps.tsx) ------------------------------------ */
+      .as-list {
+        box-sizing: border-box;
+        margin: var(--as-pad);
+        padding: 0;
+        border: 1px solid var(--as-border);
+        min-height: 100px;
+        overflow: auto;
+      }
+
+      /* --- .step-element + StepContainer ----------------------------- */
+      .as-step {
+        line-height: var(--as-step-line);
+      }
+
+      .as-step > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 8px;
+        background: rgba(0, 0, 0, 0);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .as-step.is-selected > div {
+        background: var(--as-selected);
+      }
+
+      .as-step-label {
+        /* min-width: 0 is what makes the ellipsis real. As a flex item this
+           span defaults to min-width: auto, whose min-content size is the
+           entire unbroken label — it would refuse to shrink and push the row
+           wide instead of truncating. Same reason .as-input carries it. */
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      /* --- ActionButtons: present but transparent until hover -------- */
+      .as-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: var(--as-actions-w);
+        flex: 0 0 var(--as-actions-w);
+        opacity: 0;
+      }
+
+      .as-step:hover .as-actions,
+      .as-step.is-hovered .as-actions {
+        opacity: 1;
+      }
+
+      .as-actions svg {
+        cursor: pointer;
+      }
+
+      /* --- EmptyResult (Styles.ts) ----------------------------------- */
+      .as-empty {
+        text-align: center;
+        padding-top: 40px;
+        padding-bottom: 24px;
+        color: var(--as-text);
+      }
+
+      .as-empty .as-emoji {
+        font-size: 20px;
+        padding-bottom: 8px;
+        display: block;
+      }
+
+      .as-empty p {
+        margin: 0;
+      }
+
+      /* antd outlined icons, drawn at the 1em they inherit */
+      .as-icon {
+        width: 1em;
+        height: 1em;
+        fill: currentColor;
+        display: inline-block;
+        vertical-align: -0.125em;
+      }
+    </style>
+  </head>
+  <body>
+    <figure>
+      <figcaption>Applied steps — populated list, third step selected</figcaption>
+      <div class="as-panel">
+        <div class="as-body">
+          <div class="as-header">
+            <div class="as-header-title">Applied steps</div>
+            <div class="as-move">
+              <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Move step up">
+                <path
+                  d="M890.5 755.3L537.9 269.2c-12.8-17.6-38.1-17.6-50.9 0L134.5 755.3c-15.4 21.2-.3 51 26 51h704c25.9 0 41-29.8 25.6-51z"
+                  transform="rotate(180 512 512)"
+                />
+              </svg>
+              <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Move step down">
+                <path
+                  d="M890.5 755.3L537.9 269.2c-12.8-17.6-38.1-17.6-50.9 0L134.5 755.3c-15.4 21.2-.3 51 26 51h704c25.9 0 41-29.8 25.6-51z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="as-search-and-list">
+            <div class="as-search">
+              <div class="as-input">Searching...</div>
+              <div class="as-search-btn">
+                <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Search">
+                  <path
+                    d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-88-212.1-56.6-56.7-132-88-212.1-88s-155.5 31.3-212.1 88C143.1 256.5 112 331.8 112 412c0 80.1 31.3 155.5 88 212.1 56.6 56.7 131.9 88 212.1 88 67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.5-43.5a8.2 8.2 0 000-11.7zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div class="as-list">
+              <div class="as-step">
+                <div>
+                  <span class="as-step-label" title="Add row (Gross Profit)">Add row (Gross Profit)</span>
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-step">
+                <div>
+                  <span class="as-step-label" title="Update row style (Total Operating Expenses)"
+                    >Update row style (Total Operating…</span
+                  >
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-step is-selected is-hovered">
+                <div>
+                  <span class="as-step-label" title="Indent size 20px (Total Operating Expenses)"
+                    >Indent size 20px (Total Operat…</span
+                  >
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-step">
+                <div>
+                  <span class="as-step-label" title="CF (Actuals)">CF (Actuals)</span>
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-step">
+                <div>
+                  <span class="as-step-label" title="Column formula (Budget)">Column formula (Budget)</span>
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-step">
+                <div>
+                  <span class="as-step-label" title="Hide Row (Eliminations)">Hide Row (Eliminations)</span>
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-step">
+                <div>
+                  <span class="as-step-label" title="Update all rows style">Update all rows style</span>
+                  <span class="as-actions">
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Rename step">
+                      <path
+                        d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
+                      />
+                    </svg>
+                    <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Delete step">
+                      <path
+                        d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </figure>
+    <figure>
+      <figcaption>Applied steps — search typed, nothing matched (EmptySearchingResult)</figcaption>
+      <div class="as-panel">
+        <div class="as-body">
+          <div class="as-header">
+            <div class="as-header-title">Applied steps</div>
+            <div class="as-move">
+              <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Move step up">
+                <path
+                  d="M890.5 755.3L537.9 269.2c-12.8-17.6-38.1-17.6-50.9 0L134.5 755.3c-15.4 21.2-.3 51 26 51h704c25.9 0 41-29.8 25.6-51z"
+                  transform="rotate(180 512 512)"
+                />
+              </svg>
+              <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Move step down">
+                <path
+                  d="M890.5 755.3L537.9 269.2c-12.8-17.6-38.1-17.6-50.9 0L134.5 755.3c-15.4 21.2-.3 51 26 51h704c25.9 0 41-29.8 25.6-51z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="as-search-and-list">
+            <div class="as-search">
+              <div class="as-input has-value">
+                <span>zzz</span>
+                <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Clear" style="color: rgba(0, 0, 0, 0.25)">
+                  <path
+                    d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm165.4 618.2l-66-.3L512 563.4l-99.3 118.4-66.1.3c-4.4 0-8-3.5-8-8 0-1.9.7-3.7 1.9-5.2l130.1-155L340.5 359a8.32 8.32 0 01-1.9-5.2c0-4.4 3.6-8 8-8l66.1.3L512 464.6l99.3-118.4 66-.3c4.4 0 8 3.5 8 8 0 1.9-.7 3.7-1.9 5.2L553.5 514l130 155c1.2 1.5 1.9 3.3 1.9 5.2 0 4.4-3.6 8-8 8z"
+                  />
+                </svg>
+              </div>
+              <div class="as-search-btn">
+                <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="Search">
+                  <path
+                    d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-88-212.1-56.6-56.7-132-88-212.1-88s-155.5 31.3-212.1 88C143.1 256.5 112 331.8 112 412c0 80.1 31.3 155.5 88 212.1 56.6 56.7 131.9 88 212.1 88 67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.5-43.5a8.2 8.2 0 000-11.7zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div class="as-list">
+              <div class="as-empty">
+                <span class="as-emoji">
+                  <svg class="as-icon" viewBox="0 0 1024 1024" aria-label="No results">
+                    <path
+                      d="M288 421a48 48 0 1096 0 48 48 0 10-96 0zm352 0a48 48 0 1096 0 48 48 0 10-96 0zM512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm175.2-380.9c-3.1-.9-6.3-1.4-9.6-1.4-11.6 0-22.5 5.7-29.1 15.2C623.2 553 568.6 582 512 582s-111.2-29-136.5-85.1c-6.6-9.5-17.5-15.2-29.1-15.2-3.3 0-6.5.5-9.6 1.4-15.2 4.4-24 20.3-19.6 35.5C349.6 600.6 425.4 654 512 654s162.4-53.4 194.8-135.4c4.4-15.2-4.4-31.1-19.6-35.5z"
+                    />
+                  </svg>
+                </span>
+                <p>No matching steps found.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </figure>
+  </body>
+</html>
